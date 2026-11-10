@@ -6,7 +6,7 @@
 /*   By: apazitor <apazitor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/04 10:37:29 by apazitor          #+#    #+#             */
-/*   Updated: 2026/11/09 15:06:45 by apazitor         ###   ########.fr       */
+/*   Updated: 2026/11/10 17:15:35 by apazitor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <fcntl.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 5
+#  define BUFFER_SIZE 6
 # endif
 
 char	*get_next_line(int fd);

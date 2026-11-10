@@ -6,7 +6,7 @@
 /*   By: apazitor <apazitor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/04 11:43:31 by apazitor          #+#    #+#             */
-/*   Updated: 2026/11/09 16:05:15 by apazitor         ###   ########.fr       */
+/*   Updated: 2026/11/10 18:18:14 by apazitor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ char	*ft_strchr(const char *s, int c)
 	int		i;
 	char	searched_character;
 
+	if (!s)
+		return (NULL);
 	i = 0;
 	searched_character = (char)c;
 	while (s[i] != '\0')
@@ -29,36 +31,57 @@ char	*ft_strchr(const char *s, int c)
 		return ((char *)&s[i]);
 	return (NULL);
 }
+char	*ft_strdup(const char *s)
+{
+	char	*new_s;
+	size_t	i;
+	size_t	s_len;
 
+	s_len = ft_strlen(s);
+	new_s = NULL;
+	new_s = malloc(s_len + 1);
+	if (new_s == NULL)
+		return (NULL);
+	i = 0;
+	while (i < s_len)
+	{
+		new_s[i] = s[i];
+		i++;
+	}
+	new_s[i] = '\0';
+	return (new_s);
+}
 char	*ft_get_word_before_delim(char **stash, char delim)
 {
-	int	i;
-	char *word;
+	int		i;
+	char	*word;
+	char	*new_stash;
 
-	word = NULL;
-	if (*stash == NULL)
+	if (!stash || !*stash)
 		return (NULL);
 	i = 0;
 	while ((*stash)[i] && (*stash)[i] != delim)
-	{
 		i++;
-	}
-	if((*stash)[i] == delim)
-		i++;
-	if (i)
-		word = malloc(i + 1);
-	if(!word)
-		return (NULL);
-	ft_memcpy(word, *stash, i);
 	if ((*stash)[i] == delim)
+		i++;
+	word = malloc(i + 1);
+	if (!word)
 	{
-		word[i] = '\0';
-		*stash += i + 1;
+		free(word);
+		return (NULL);
 	}
-	else 
-		*stash += i;
+	ft_memcpy(word, *stash, i);
+	word[i] = '\0';
+	new_stash = ft_strdup(*stash + i);
+	if (!new_stash)
+	{
+		free(new_stash);
+		return (NULL);
+	}
+	free(*stash);
+	*stash = new_stash;
+	free(new_stash);
 	return (word);
-
 }
 void	*ft_memcpy(void *dest, const void *src, size_t n)
 {
@@ -76,6 +99,7 @@ void	*ft_memcpy(void *dest, const void *src, size_t n)
 		byte_dest[i] = byte_src[i];
 		i++;
 	}
+
 	return (dest);
 }
 char	*ft_strjoin(char const *s1, char const *s2)
@@ -85,12 +109,12 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	int		len_sufix;
 	int		new_string_len;
 
-	len_prefix = 0;
-	len_sufix = 0;
-	if (s1 != NULL)
-		len_prefix = ft_strlen(s1);
-	if (s2 != NULL)
-		len_sufix = ft_strlen(s2);
+	if (!s1)
+		s1 = "";
+	if (!s2)
+		s2 = "";
+	len_prefix = ft_strlen(s1);
+	len_sufix = ft_strlen(s2);
 	new_string_len = len_prefix + len_sufix + 1;
 	new_string = malloc(new_string_len);
 	if (new_string == NULL)
@@ -105,6 +129,9 @@ int	ft_strlen(char const *str)
 	int i;
 	int nr;
 
+	if (!str)	
+		return(0);
+
 	i = 0;
 	nr = 0;
 	while (str[i] != '\0')
@@ -114,12 +141,3 @@ int	ft_strlen(char const *str)
 	}
 	return (nr);
 }
-
-
-// int main()
-// {
-//     char *str = "hello world etc etc";
-//     char *p = ft_strchr(str, ' ');
-
-//     printf("%s", p);
-// }
