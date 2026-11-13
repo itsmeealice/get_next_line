@@ -6,7 +6,7 @@
 /*   By: apazitor <apazitor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/04 11:43:31 by apazitor          #+#    #+#             */
-/*   Updated: 2026/11/10 18:18:14 by apazitor         ###   ########.fr       */
+/*   Updated: 2026/11/13 09:16:19 by apazitor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,20 +67,27 @@ char	*ft_get_word_before_delim(char **stash, char delim)
 	word = malloc(i + 1);
 	if (!word)
 	{
-		free(word);
+		free(*stash);
+		*stash = NULL;
 		return (NULL);
 	}
 	ft_memcpy(word, *stash, i);
 	word[i] = '\0';
-	new_stash = ft_strdup(*stash + i);
-	if (!new_stash)
+	if ((*stash)[i] == '\0')
+		new_stash = NULL;
+	else
 	{
-		free(new_stash);
-		return (NULL);
+		new_stash = ft_strdup(*stash + i);
+		if (!new_stash)
+		{
+			free(word);
+			free(*stash);
+			*stash = NULL;
+			return (NULL);
+		}
 	}
 	free(*stash);
 	*stash = new_stash;
-	free(new_stash);
 	return (word);
 }
 void	*ft_memcpy(void *dest, const void *src, size_t n)
@@ -126,11 +133,11 @@ char	*ft_strjoin(char const *s1, char const *s2)
 
 int	ft_strlen(char const *str)
 {
-	int i;
-	int nr;
+	int	i;
+	int	nr;
 
 	if (!str)	
-		return(0);
+		return (0);
 
 	i = 0;
 	nr = 0;
