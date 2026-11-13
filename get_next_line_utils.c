@@ -6,7 +6,7 @@
 /*   By: apazitor <apazitor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/04 11:43:31 by apazitor          #+#    #+#             */
-/*   Updated: 2026/11/13 09:16:19 by apazitor         ###   ########.fr       */
+/*   Updated: 2026/11/13 16:38:02 by apazitor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ char	*ft_strchr(const char *s, int c)
 		return ((char *)&s[i]);
 	return (NULL);
 }
+
 char	*ft_strdup(const char *s)
 {
 	char	*new_s;
@@ -51,6 +52,7 @@ char	*ft_strdup(const char *s)
 	new_s[i] = '\0';
 	return (new_s);
 }
+
 char	*ft_get_word_before_delim(char **stash, char delim)
 {
 	int		i;
@@ -60,20 +62,16 @@ char	*ft_get_word_before_delim(char **stash, char delim)
 	if (!stash || !*stash)
 		return (NULL);
 	i = 0;
-	while ((*stash)[i] && (*stash)[i] != delim)
+	while ((*stash)[i] && (*stash)[i] != delim) //get the characters before sep
 		i++;
-	if ((*stash)[i] == delim)
+	if ((*stash)[i] == delim) //get sep -- first handle the delim case
 		i++;
-	word = malloc(i + 1);
+	word = malloc(i + 1); //allocate memory for sep + null character
 	if (!word)
-	{
-		free(*stash);
-		*stash = NULL;
-		return (NULL);
-	}
+		return (free_and_null(stash));
 	ft_memcpy(word, *stash, i);
-	word[i] = '\0';
-	if ((*stash)[i] == '\0')
+	word[i] = '\0'; //copy and terminate the word 
+	if ((*stash)[i] == '\0') // just delete the pointer to the stash bc it is finished
 		new_stash = NULL;
 	else
 	{
@@ -81,15 +79,14 @@ char	*ft_get_word_before_delim(char **stash, char delim)
 		if (!new_stash)
 		{
 			free(word);
-			free(*stash);
-			*stash = NULL;
-			return (NULL);
+			return (free_and_null(stash));
 		}
 	}
 	free(*stash);
 	*stash = new_stash;
 	return (word);
 }
+
 void	*ft_memcpy(void *dest, const void *src, size_t n)
 {
 	unsigned char		*byte_dest;
@@ -106,29 +103,7 @@ void	*ft_memcpy(void *dest, const void *src, size_t n)
 		byte_dest[i] = byte_src[i];
 		i++;
 	}
-
 	return (dest);
-}
-char	*ft_strjoin(char const *s1, char const *s2)
-{
-	char	*new_string;
-	int		len_prefix;
-	int		len_sufix;
-	int		new_string_len;
-
-	if (!s1)
-		s1 = "";
-	if (!s2)
-		s2 = "";
-	len_prefix = ft_strlen(s1);
-	len_sufix = ft_strlen(s2);
-	new_string_len = len_prefix + len_sufix + 1;
-	new_string = malloc(new_string_len);
-	if (new_string == NULL)
-		return (NULL);
-	ft_memcpy(new_string, s1, len_prefix);
-	ft_memcpy(new_string + len_prefix, s2, len_sufix + 1);
-	return (new_string);
 }
 
 int	ft_strlen(char const *str)
@@ -136,9 +111,8 @@ int	ft_strlen(char const *str)
 	int	i;
 	int	nr;
 
-	if (!str)	
+	if (!str)
 		return (0);
-
 	i = 0;
 	nr = 0;
 	while (str[i] != '\0')
