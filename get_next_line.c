@@ -6,7 +6,7 @@
 /*   By: apazitor <apazitor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/04 10:12:54 by apazitor          #+#    #+#             */
-/*   Updated: 2026/11/13 16:11:06 by apazitor         ###   ########.fr       */
+/*   Updated: 2026/11/16 15:48:47 by apazitor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,45 +39,45 @@ static char	*grow_stash(char *stash, int len, int *cap, int need)
 	return (new_stash);
 }
 
+int	read_chunk(int fd, char *buffer, char **stash, int cap, int *len)
+{
+	ssize_t	read_bytes;
+
+	read_bytes = read(fd, buffer, BUFFER_SIZE);
+	if (read_bytes <= 0)
+		return (-1);
+	buffer[read_bytes] = '\0';
+	if (*len + read_bytes + 1 > cap)
+	{
+		*stash = grow_stash(*stash, *len, &cap, *len + read_bytes + 1);
+		if (!*stash)
+			return (-1);
+	}
+	ft_memcpy(*stash + *len, buffer, read_bytes + 1);
+	*len += read_bytes;
+	return (1);
+}
+
 char	*read_to_stash(int fd, char *stash)
 {
 	char	*buffer;
-	ssize_t	read_bytes;
 	int		len;
 	int		cap;
+	int		status;
 
-	len = 0;
-	cap = 0;
 	if (ft_strchr(stash, '\n'))
 		return (stash);
 	buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
 		return (free_and_null(&stash));
-	len = ft_strlen(stash);
-	if (stash)
-		cap = len + 1;
-	while (1)
-	{
-		read_bytes = read(fd, buffer, BUFFER_SIZE);
-		if (read_bytes == -1)
-		{
-			free(buffer);
-			return (free_and_null(&stash));
-		}
-		if (read_bytes == 0)
-			break ;
-		buffer[read_bytes] = '\0';
-		if (len + read_bytes + 1 > cap)
-			stash = grow_stash(stash, len, &cap, len + read_bytes + 1);
-		if (!stash)
-			return (free_and_null(&buffer));
-		ft_memcpy(stash + len, buffer, read_bytes + 1);
-		len += read_bytes;
-		if (ft_strchr(buffer, '\n'))
-			break ;
-	}
+	buffer[0] = '\0';
+	len = ft_word_len(stash, ' ', 0);
+	cap = len + (stash != NULL);
+	status = 1;
+	while (status > 0 && !ft_strchr(buffer, '\n'))
+		status = read_chunk(fd, buffer, &stash, cap, &len);
 	free(buffer);
-	if (read_bytes < 0)
+	if (status < 0)
 		return (free_and_null(&stash));
 	return (stash);
 }

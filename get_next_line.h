@@ -6,7 +6,7 @@
 /*   By: apazitor <apazitor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/04 10:37:29 by apazitor          #+#    #+#             */
-/*   Updated: 2026/11/13 15:07:12 by apazitor         ###   ########.fr       */
+/*   Updated: 2026/11/14 18:07:26 by apazitor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 char	*get_next_line(int fd);
 char	*ft_strchr(const char *s, int c);
 char	*ft_strjoin(char const *s1, char const *s2);
-int		ft_strlen(char const *str);
+int	    ft_word_len(const char *s, char delim, int with_delim_option);
 char	*ft_get_word_before_delim(char **stash, char delim);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
 char	*ft_strdup(const char *s);
