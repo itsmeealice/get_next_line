@@ -6,7 +6,7 @@
 /*   By: apazitor <apazitor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/04 10:12:54 by apazitor          #+#    #+#             */
-/*   Updated: 2026/11/16 15:48:47 by apazitor         ###   ########.fr       */
+/*   Updated: 2026/11/17 14:23:17 by apazitor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,30 +39,29 @@ static char	*grow_stash(char *stash, int len, int *cap, int need)
 	return (new_stash);
 }
 
-int	read_chunk(int fd, char *buffer, char **stash, int cap, int *len)
+int	read_chunk(int fd, char *buffer, char **stash, t_size	*sz)
 {
-	ssize_t	read_bytes;
+	ssize_t	r_bytes;
 
-	read_bytes = read(fd, buffer, BUFFER_SIZE);
-	if (read_bytes <= 0)
-		return (-1);
-	buffer[read_bytes] = '\0';
-	if (*len + read_bytes + 1 > cap)
+	r_bytes = read(fd, buffer, BUFFER_SIZE);
+	if (r_bytes <= 0)
+		return (r_bytes);
+	buffer[r_bytes] = '\0';
+	if (sz -> len + r_bytes + 1 > sz -> cap)
 	{
-		*stash = grow_stash(*stash, *len, &cap, *len + read_bytes + 1);
+		*stash = grow_stash(*stash, sz->len, &(sz->cap), sz->len + r_bytes + 1);
 		if (!*stash)
 			return (-1);
 	}
-	ft_memcpy(*stash + *len, buffer, read_bytes + 1);
-	*len += read_bytes;
+	ft_memcpy(*stash + sz->len, buffer, r_bytes + 1);
+	sz->len += r_bytes;
 	return (1);
 }
 
 char	*read_to_stash(int fd, char *stash)
 {
 	char	*buffer;
-	int		len;
-	int		cap;
+	t_size	sz;
 	int		status;
 
 	if (ft_strchr(stash, '\n'))
@@ -71,14 +70,14 @@ char	*read_to_stash(int fd, char *stash)
 	if (!buffer)
 		return (free_and_null(&stash));
 	buffer[0] = '\0';
-	len = ft_word_len(stash, ' ', 0);
-	cap = len + (stash != NULL);
+	sz.len = ft_word_len(stash, ' ', 0);
+	sz.cap = sz.len + (stash != NULL);
 	status = 1;
 	while (status > 0 && !ft_strchr(buffer, '\n'))
-		status = read_chunk(fd, buffer, &stash, cap, &len);
+		status = read_chunk(fd, buffer, &stash, &sz);
 	free(buffer);
 	if (status < 0)
-		return (free_and_null(&stash));
+		free_and_null(&stash);
 	return (stash);
 }
 
@@ -99,6 +98,7 @@ char	*get_next_line(int fd)
 		stash = NULL;
 		return (line);
 	}
+	//printf("%s\n", read_to_stash(fd, stash));
 	return (ft_get_word_before_delim(&stash, '\n'));
 }
 // int main(void)
@@ -107,8 +107,10 @@ char	*get_next_line(int fd)
 // 	FILE *f2 = fopen("output.txt", "a");
 // 	char *result1 = get_next_line(f1); //1
 // 	char *result2 = get_next_line(f1); //2
+// 	char *result3 = get_next_line(f1);
 // 	fprintf(f2, "result1 : %s", result1); 
 // 	fprintf(f2, "result2 : %s", result2);
+// 	fprintf(f2, "result3 : %s", result3);
 // 	free(result1);
 // 	free(result2);
 // 	fclose(f2);
